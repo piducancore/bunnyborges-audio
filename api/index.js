@@ -1,35 +1,39 @@
 const { Telegraf } = require("telegraf");
+const { request, gql } = require("graphql-request");
 
 const bot = new Telegraf(process.env.TELEGRAM_API_TOKEN);
-bot.start((ctx) => ctx.reply("Welcome"));
-bot.help((ctx) => ctx.reply("Send me a sticker"));
-bot.on("sticker", (ctx) => ctx.reply("👍"));
-bot.hears("hi", (ctx) => ctx.reply("Hey there"));
+
 bot.on("inline_query", async (ctx) => {
-  const apiUrl = `http://recipepuppy.com/api/?q=${ctx.inlineQuery.query}`;
-  const response = await fetch(apiUrl);
-  const { results } = await response.json();
-  const recipes = results
-    .filter(({ thumbnail }) => thumbnail)
-    .map(({ title, href, thumbnail }) => ({
-      type: "article",
-      id: thumbnail,
-      title: title,
-      description: title,
-      thumb_url: thumbnail,
-      input_message_content: {
-        message_text: title,
+  try {
+    const { sheetpoem } = await request(
+      "https://sheetpoetry.now.sh/graphql",
+      gql`
+        {
+          sheetpoem(
+            spreadsheetId: "1qjgDw3TREpqQoSSbB0tzd0Joues1jraJix2mU52zToU"
+            range: "A1:E500"
+            verses: 4
+          )
+        }
+      `
+    );
+    const results = [
+      {
+        type: "article",
+        id: 1,
+        title: "hyper! hyper!",
+        description: "hyper uppercut 🦾",
+        input_message_content: {
+          message_text: sheetpoem,
+          parse_mode: "HTML",
+        },
       },
-      reply_markup: Markup.inlineKeyboard([Markup.button.url("Go to recipe", href)]),
-    }));
-  return await ctx.answerInlineQuery(recipes);
+    ];
+    return await ctx.answerInlineQuery(results, { cache_time: 1 });
+  } catch (e) {
+    throw e;
+  }
 });
-
-bot.on("chosen_inline_result", ({ chosenInlineResult }) => {
-  console.log("chosen inline result", chosenInlineResult);
-});
-
-// bot.launch();
 
 module.exports = async (req, res) => {
   try {
