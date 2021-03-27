@@ -28,16 +28,13 @@ bot.on("inline_query", async (ctx) => {
 bot.on("chosen_inline_result", ({ chosenInlineResult }) => {
   console.log("chosen inline result", chosenInlineResult);
 });
-bot.launch();
+
+// bot.launch();
 
 module.exports = async (req, res) => {
   try {
     await bot.handleUpdate(req.body);
   } finally {
-    res.json({
-      body: req.body,
-      query: req.query,
-      cookies: req.cookies,
-    });
+    res.status(200).end();
   }
 };
