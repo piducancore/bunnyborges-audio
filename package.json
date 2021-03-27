@@ -4,5 +4,8 @@
   "main": "api/index.js",
   "repository": "https://github.com/cyberpunga/telegram-vercel.git",
   "author": "@piducancore",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "telegraf": "^4.3.0"
+  }
 }
