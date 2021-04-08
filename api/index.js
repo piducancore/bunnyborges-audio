@@ -1,22 +1,9 @@
 const { Telegraf } = require("telegraf");
-const { request, gql } = require("graphql-request");
 
 const bot = new Telegraf(process.env.TELEGRAM_API_TOKEN);
 
 bot.on("inline_query", async (ctx) => {
   try {
-    const { sheetpoem } = await request(
-      "https://sheetpoetry.now.sh/graphql",
-      gql`
-        {
-          sheetpoem(
-            spreadsheetId: "1qjgDw3TREpqQoSSbB0tzd0Joues1jraJix2mU52zToU"
-            range: "A1:E500"
-            verses: 4
-          )
-        }
-      `
-    );
     const results = [
       {
         type: "article",
@@ -24,7 +11,7 @@ bot.on("inline_query", async (ctx) => {
         title: "hyper! hyper!",
         description: "hyper uppercut 🦾",
         input_message_content: {
-          message_text: sheetpoem,
+          message_text: "some text here",
           parse_mode: "HTML",
         },
       },
