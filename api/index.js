@@ -1,22 +1,32 @@
 const { Telegraf } = require("telegraf");
+const { getLastTweet } = require("../utils/twitter");
+const { getSpeech } = require("../utils/watson");
+const fs = require("fs");
 
-const bot = new Telegraf(process.env.TELEGRAM_API_TOKEN);
+const telegram = new Telegraf(process.env.TELEGRAM_API_TOKEN);
 
-bot.on("inline_query", async (ctx) => {
+telegram.on("inline_query", async (ctx) => {
   try {
-    const results = [
-      {
-        type: "article",
-        id: 1,
-        title: "hyper! hyper!",
-        description: "hyper uppercut 🦾",
-        input_message_content: {
-          message_text: "some text here",
-          parse_mode: "HTML",
+    const { text } = await getLastTweet("bunnyborges");
+    const stream = await getSpeech(text, "es-LA_SofiaV3Voice");
+    await new Promise((resolve, reject) => {
+      const writeStream = fs.createWriteStream("speech.mp3");
+      stream.pipe(writeStream);
+      stream.on("close", () => resolve());
+      stream.on("error", (err) => reject(err));
+    });
+
+    return await ctx.answerInlineQuery(
+      [
+        {
+          type: "audio",
+          id: 1,
+          audio_url: "https://bunnyborges-audio.vercel.app/speech.mp3",
+          title: "hyper! hyper!",
         },
-      },
-    ];
-    return await ctx.answerInlineQuery(results, { cache_time: 1 });
+      ],
+      { cache_time: 1 }
+    );
   } catch (e) {
     throw e;
   }
@@ -24,7 +34,7 @@ bot.on("inline_query", async (ctx) => {
 
 module.exports = async (req, res) => {
   try {
-    await bot.handleUpdate(req.body);
+    await telegram.handleUpdate(req.body);
   } finally {
     res.status(200).end();
   }
