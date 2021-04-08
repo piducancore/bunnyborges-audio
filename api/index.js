@@ -7,17 +7,17 @@ const telegram = new Telegraf(process.env.TELEGRAM_API_TOKEN);
 
 telegram.on("inline_query", async (ctx) => {
   try {
-    const tweets = await getLastest("bunnyborges");
-    const stream = await getSpeech(
-      tweets[Math.floor(Math.random() * tweets.length)],
-      "es-LA_SofiaV3Voice"
-    );
-    await new Promise((resolve, reject) => {
-      const writeStream = createWriteStream("speech.mp3");
-      stream.pipe(writeStream);
-      stream.on("end", () => resolve());
-      stream.on("error", (err) => reject(err));
-    });
+    // const tweets = await getLastest("bunnyborges");
+    // const stream = await getSpeech(
+    //   tweets[Math.floor(Math.random() * tweets.length)],
+    //   "es-LA_SofiaV3Voice"
+    // );
+    // await new Promise((resolve, reject) => {
+    //   const writeStream = createWriteStream("speech.mp3");
+    //   stream.pipe(writeStream);
+    //   stream.on("end", () => resolve());
+    //   stream.on("error", (err) => reject(err));
+    // });
 
     return await ctx.answerInlineQuery(
       [
