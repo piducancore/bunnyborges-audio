@@ -1,18 +1,21 @@
 const { Telegraf } = require("telegraf");
-const { getLastTweet } = require("../utils/twitter");
+const { createWriteStream } = require("fs");
+const { getLastest } = require("../utils/twitter");
 const { getSpeech } = require("../utils/watson");
-const fs = require("fs");
 
 const telegram = new Telegraf(process.env.TELEGRAM_API_TOKEN);
 
 telegram.on("inline_query", async (ctx) => {
   try {
-    const { text } = await getLastTweet("bunnyborges");
-    const stream = await getSpeech(text, "es-LA_SofiaV3Voice");
+    const tweets = await getLastest("bunnyborges");
+    const stream = await getSpeech(
+      tweets[Math.floor(Math.random() * tweets.length)],
+      "es-LA_SofiaV3Voice"
+    );
     await new Promise((resolve, reject) => {
-      const writeStream = fs.createWriteStream("speech.mp3");
+      const writeStream = createWriteStream("speech.mp3");
       stream.pipe(writeStream);
-      stream.on("close", () => resolve());
+      stream.on("end", () => resolve());
       stream.on("error", (err) => reject(err));
     });
 
