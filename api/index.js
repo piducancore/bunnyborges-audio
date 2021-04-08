@@ -18,13 +18,13 @@ telegram.on("inline_query", async (ctx) => {
     //   stream.on("end", () => resolve());
     //   stream.on("error", (err) => reject(err));
     // });
-
+    const URL = process.env.VERCEL_URL ? process.env.VERCEL_URL : "90f88f003e18.ngrok.io";
     return await ctx.answerInlineQuery(
       [
         {
           type: "audio",
           id: 1,
-          audio_url: "https://bunnyborges-audio.vercel.app/speech.mp3",
+          audio_url: `https://${URL}/speech.mp3`,
           title: "hyper! hyper!",
         },
       ],
