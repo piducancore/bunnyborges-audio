@@ -9,7 +9,7 @@ telegram.on("inline_query", async (ctx) => {
     const tweets = await getLastest("bunnyborges");
     const randomTweet = tweets[Math.floor(Math.random() * tweets.length)];
     const params = stringify({ text: randomTweet, voice: "es-LA_SofiaV3Voice", buffer: true });
-    const audio_url = `https://${process.env.VERCEL_URL}/api/tts?${params}`;
+    const audio_url = `https://serverless-tts.vercel.app/api/demo?${params}`;
     console.log(audio_url);
     const answer = await ctx.answerInlineQuery(
       [
