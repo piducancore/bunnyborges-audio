@@ -1,35 +1,27 @@
 const { Telegraf } = require("telegraf");
-const { createWriteStream } = require("fs");
+const { stringify } = require("querystring");
 const { getLastest } = require("../utils/twitter");
-const { getSpeech } = require("../utils/watson");
 
 const telegram = new Telegraf(process.env.TELEGRAM_API_TOKEN);
 
 telegram.on("inline_query", async (ctx) => {
   try {
-    // const tweets = await getLastest("bunnyborges");
-    // const stream = await getSpeech(
-    //   tweets[Math.floor(Math.random() * tweets.length)],
-    //   "es-LA_SofiaV3Voice"
-    // );
-    // await new Promise((resolve, reject) => {
-    //   const writeStream = createWriteStream("speech.mp3");
-    //   stream.pipe(writeStream);
-    //   stream.on("end", () => resolve());
-    //   stream.on("error", (err) => reject(err));
-    // });
-    const URL = process.env.VERCEL_URL ? process.env.VERCEL_URL : "90f88f003e18.ngrok.io";
-    return await ctx.answerInlineQuery(
+    const tweets = await getLastest("bunnyborges");
+    const randomTweet = tweets[Math.floor(Math.random() * tweets.length)];
+    const params = stringify({ text: randomTweet, voice: "es-LA_SofiaV3Voice", buffer: true });
+    const audio_url = `https://${process.env.VERCEL_URL}/api/tts?${params}`;
+    const answer = await ctx.answerInlineQuery(
       [
         {
           type: "audio",
           id: 1,
-          audio_url: `https://${URL}/speech.mp3`,
-          title: "hyper! hyper!",
+          audio_url,
+          title: "🎧",
         },
       ],
       { cache_time: 1 }
     );
+    return answer;
   } catch (e) {
     throw e;
   }
