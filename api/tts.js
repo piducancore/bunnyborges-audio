@@ -32,6 +32,6 @@ module.exports = async (req, res) => {
       result.pipe(res);
     }
   } catch (error) {
-    res.status(500).json({ error });
+    throw error;
   }
 };
