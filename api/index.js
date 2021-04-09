@@ -16,7 +16,7 @@ telegram.on("inline_query", async (ctx) => {
           type: "audio",
           id: 1,
           audio_url,
-          title: "🎧",
+          title: randomTweet,
         },
       ],
       { cache_time: 1 }
